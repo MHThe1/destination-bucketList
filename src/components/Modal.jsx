@@ -16,7 +16,7 @@ const Modal = forwardRef(function Modal({ children }, ref) {
   });
 
   return createPortal(
-    <dialog className="min-w-[30rem] p-0 z-20 bg-[#d5c7bc] rounded-md shadow-[0_2px_8px_rgba(0,0,0,0.26)] animate-[slide-down-fade-in_0.3s_ease-out_forwards]" ref={dialog}>
+    <dialog className="min-w-[30rem] z-20 bg-stone-700 dark:bg-slate-400 text-stone-100 rounded-md p-4" ref={dialog}>
       {children}
     </dialog>,
     document.getElementById('modal')
