@@ -1,26 +1,27 @@
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-const Modal = forwardRef(function Modal({ children }, ref) {
+function Modal({ open, children }) {
   const dialog = useRef();
 
-  useImperativeHandle(ref, () => {
-    return {
-      open: () => {
-        dialog.current.showModal();
-      },
-      close: () => {
-        dialog.current.close();
-      },
-    };
-  });
+  useEffect(() => {
+    if (open) {
+      dialog.current.showModal();
+    } else {
+      dialog.current.close();
+    }
+  }, [open]);
+  
 
   return createPortal(
-    <dialog className="min-w-[30rem] z-20 bg-stone-700 dark:bg-slate-400 text-stone-100 rounded-md p-4" ref={dialog}>
-      {children}
+    <dialog 
+      className="w-5/6 sm:w-3/6 md:w-3/6 lg:w-2/6 xl:w-2/8 2xl:w-[35rem] z-20 bg-slate-800 text-stone-100 rounded-md p-4" 
+      ref={dialog}
+      >
+      {open ? children : null}
     </dialog>,
     document.getElementById('modal')
   );
-});
+};
 
 export default Modal;

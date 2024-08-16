@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 import Header from './components/Header';
 import { ThemeMode } from './components/ToggleTheme';
@@ -12,18 +12,17 @@ import { sortPlacesByDistance } from "./loc.js";
 
 
 const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
-const storedPlaces = storedIds.map((id) => 
+const storedPlaces = storedIds.map((id) =>
   AVAILABLE_PLACES.find((place) => place.id === id)
 ).filter(place => place !== undefined);
 
 
 
 function App() {
-
-  const modal = useRef();
   const selectedPlace = useRef();
   const [availablePlaces, setAvaiablePlaces] = useState([]);
   const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -34,12 +33,12 @@ function App() {
   }, [])
 
   function handleStartRemovePlace(id) {
-    modal.current.open();
+    setIsModalOpen(true);
     selectedPlace.current = id;
   }
 
   function handleStopRemovePlace() {
-    modal.current.close();
+    setIsModalOpen(false);
   }
 
   function handleSelectPlace(id) {
@@ -57,20 +56,21 @@ function App() {
     }
   }
 
-  function handleRemovePlace() {
+  const handleRemovePlace = useCallback(function handleRemovePlace() {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
-    modal.current.close();
+    setIsModalOpen(false);
 
     const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
     localStorage.setItem('selectedPlaces', JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current)))
-  }
+  }, [])
 
 
   return (
     <div className={ThemeMode() ? "dark" : ""}>
-      <Modal ref={modal}>
+      <Modal
+        open={isModalOpen}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
           onConfirm={handleRemovePlace}
